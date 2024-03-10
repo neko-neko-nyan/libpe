@@ -57,7 +57,9 @@ class TextOutput(Output):
 
         if typ == 'flags':
             value = str(value)
-            return value[value.index('.') + 1:]
+            if '.' in value:
+                return value[value.index('.') + 1:]
+            return value
 
         if typ == 'alignment':
             if bin(value).count('1') != 1:

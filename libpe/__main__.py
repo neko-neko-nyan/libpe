@@ -49,6 +49,9 @@ def main():
     parser.add_argument('--unpack-section', '-S', metavar='NAME', type=str,
                         help='Extract section contents with given NAME to file')
 
+    parser.add_argument('--unpack-resources', '-R', metavar='NAME', type=str,
+                        help='Extract resources from section with given NAME')
+
     parser.add_argument('--output', '-O', metavar='FILE', type=argparse.FileType('wb'),
                         help='Path to file for -F and -S commands')
 
@@ -73,9 +76,22 @@ def main():
         else:
             args.file.seek(s.pointer_to_raw_data - ib)
 
+        args.output.write(args.file.read(s.size_of_raw_data))
+
+    if args.unpack_resources is not None:
+        s = pe_file.sections[args.unpack_resources]
+        ib = 0 if pe_file.optional_header is None else pe_file.optional_header.image_base
+        if ib > s.pointer_to_raw_data:
+            args.file.seek(s.pointer_to_raw_data)
+        else:
+            args.file.seek(s.pointer_to_raw_data - ib)
+
+        out_path = pathlib.Path(args.output.raw.name)
+        args.output.close()
+        out_path.unlink()
+
         rm = ResourceManager(fp, s)
-        rm.extract(pathlib.Path('../out'))
-        # args.output.write(args.file.read(s.size_of_raw_data))
+        rm.extract(out_path)
 
     if args.dump:
         if args.json:

@@ -319,9 +319,9 @@ class SectionHeader:
 
 @dataclasses.dataclass
 class PEFile:
-    dos_header: DOSHeader = DOSHeader()
+    dos_header: DOSHeader = dataclasses.field(default_factory=DOSHeader)
     dos_code: bytes = b''
-    pe_header: PEHeader = PEHeader()
+    pe_header: PEHeader = dataclasses.field(default_factory=PEHeader)
     optional_header: typing.Optional[OptionalHeader] = None
     data_directories: list[tuple[int, int]] = dataclasses.field(default_factory=lambda: [(0, 0) for _ in range(16)])
     sections: dict[str, SectionHeader] = dataclasses.field(default_factory=dict)
